@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const MONGODB_URL =
-  'mongodb+srv://byungjin:test@cluster0.wkc7a.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+  'mongodb+srv://byungjin:test@cluster0.wkc7a.mongodb.net/Getple?retryWrites=true&w=majority';
 
 module.exports = () => {
   mongoose

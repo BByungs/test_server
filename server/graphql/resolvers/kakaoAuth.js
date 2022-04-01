@@ -1,5 +1,5 @@
 const { default: axios } = require('axios');
-const KakaoAuth = require('../../models/kakaoAuth.js');
+const Users = require('../../models/user');
 
 const resolvers = {
   Mutation: {
@@ -10,14 +10,14 @@ const resolvers = {
         const data = {
           grant_type: 'authorization_code',
           client_id: '90419f00e4d2c484541a8d3f8edaa7f3',
-          // client_secret: 'nwjOR3o7VcxZXhTsVrYHIwyAJqhEXfBh',
           redirect_uri: 'http://localhost:3000/auth/kakao',
           code: code.code,
+          // client_secret: 'nwjOR3o7VcxZXhTsVrYHIwyAJqhEXfBh',
         };
 
         const queryStringBody = Object.keys(data)
-          .map((k) => encodeURIComponent(k) + '=' + encodeURI(data[k])) // ['grant_type=authorization_code', 'client_id=90419f00e4d2c484541a8d3f8edaa7f3', ....]
-          .join('&'); // 'gran_type=authorization_code&client_id=90419f00e4d2c484541a8d3f8edaa7f3.....'
+          .map((k) => encodeURIComponent(k) + '=' + encodeURI(data[k]))
+          .join('&');
 
         const getAccessToken = await axios.post(url, queryStringBody, {
           headers: {
@@ -34,16 +34,40 @@ const resolvers = {
           }
         );
 
-        // USER_DB 에서 로그인한 유저 데이터의 Email을 비교해서
-        //              일반 사용자(Collection1) / 시설 관리자(Collection2)
-        //              사용자 { 시설관리자냐?: true } Ref ->
-        // 존재한다면 true , 아니라면 false값 반환
-
-        console.log(getUserData.data, getUserData.data.kakao_account);
-
-        return code;
+        let isExist = false;
+        const users = await Users.find();
+        const user = await Users.findOne({
+          email: getUserData.data.kakao_account.email,
+        });
+        users.forEach((user) => {
+          if (user.email === getUserData.data.kakao_account.email) {
+            isExist = true;
+          }
+        });
+        console.log('userTest', getUserData, isExist, user);
+        if (isExist) {
+          return {
+            data: user,
+            joined: true,
+          };
+        } else {
+          return {
+            data: {
+              email: getUserData.data.kakao_account.email,
+              isAdmin: false,
+              phoneNumber: '',
+              profile: {
+                nickname: getUserData.data.properties.nickname,
+                profile_image_url: getUserData.data.properties.profile_image,
+                thumbnail_image_url:
+                  getUserData.data.properties.thumbnail_image,
+              },
+            },
+            joined: false,
+          };
+        }
       } catch (err) {
-        console.log('error:', err);
+        console.log('error :', err);
       }
     },
   },

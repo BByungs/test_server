@@ -1,5 +1,6 @@
 const contentResolvers = require('./content');
 const kakaoAuthResolvers = require('./kakaoAuth');
+const userResolvers = require('./user');
 
 const resolvers = {
   Query: {
@@ -8,6 +9,7 @@ const resolvers = {
   Mutation: {
     ...contentResolvers.Mutation,
     ...kakaoAuthResolvers.Mutation,
+    ...userResolvers.Mutation,
   },
 };
 
