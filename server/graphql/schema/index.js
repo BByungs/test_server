@@ -7,14 +7,23 @@ const typeDefs = gql`
     createContent(contentInput: ContentInput): Content!
     deleteContent(id: ID!): Content!
     updateContent(id: ID!, contentInput: ContentInput): Content!
+    kakaoAuth(code: CodeInput!): KakaoAuth_Return!
   }
   input ContentInput {
     content: String
   }
+  input CodeInput {
+    code: String
+  }
+
   type Content {
     id: ID
     content: String
     createdAt: String
+  }
+
+  type KakaoAuth_Return {
+    code: String
   }
 `;
 
