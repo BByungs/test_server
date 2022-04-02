@@ -15,7 +15,7 @@ const resolvers = {
     },
     async deleteContent(_, args) {
       const { id } = args;
-      return await Content.findOneAndDelete({ id });
+      return await Content.findByIdAndDelete(id);
     },
     async updateContent(_, args) {
       const { id, contentInput } = args;
